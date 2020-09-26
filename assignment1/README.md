@@ -21,7 +21,9 @@ After you have installed conda, close any open terminals you might have. Then op
 
     jupyter notebook exploring_word_vectors.ipynb
     
-## 5. To make sure we are using the right environment, go to the toolbar of exploring_word_vectors.ipynb, click on Kernel -> Change kernel, you should see and select cs224n in the drop-down menu.
+## 5. Config kernel and deactivate conda
+
+To make sure we are using the right environment, go to the toolbar of exploring_word_vectors.ipynb, *click on Kernel -> Change kernel*, you should see and select *cs224n* in the drop-down menu.
 
 To deactivate an active environment, use
     
