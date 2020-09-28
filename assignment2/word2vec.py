@@ -17,6 +17,7 @@ def sigmoid(x):
     """
 
     ### YOUR CODE HERE (~1 Line)
+    s = 1. / (1. + np.exp(x))
 
     ### END YOUR CODE
 
@@ -61,6 +62,10 @@ def naiveSoftmaxLossAndGradient(
     ### Please use the provided softmax function (imported earlier in this file)
     ### This numerically stable implementation helps you avoid issues pertaining
     ### to integer overflow. 
+    
+    ## ref: https://zhangruochi.com/CS224n-Assignment-2/2019/12/07/
+    
+    
 
     ### END YOUR CODE
 
