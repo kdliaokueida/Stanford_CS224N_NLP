@@ -64,8 +64,15 @@ def naiveSoftmaxLossAndGradient(
     ### to integer overflow. 
     
     ## ref: https://zhangruochi.com/CS224n-Assignment-2/2019/12/07/
+    score = np.matmul(outsideVectors, centerWordVec)    # (vocab_size, 1)
+    y_hat = softmax(score)                              # (vocab_size, 1)
+    loss = -np.log(y_hat[outsideWordIdx])
     
+    y_grad = y_hat.copy()                               # (vocab_size, 1)
+    y_grad[outsideWordIdx] -= 1
     
+    gradCenterVec = np.matmul(outsideWordIdx.T, y_grad) # (word_vec_len, 1)
+    gradOutsideVecs = np.outer(y_grad, centerWordVec)
 
     ### END YOUR CODE
 
