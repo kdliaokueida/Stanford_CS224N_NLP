@@ -17,7 +17,7 @@ def sigmoid(x):
     """
 
     ### YOUR CODE HERE (~1 Line)
-    s = 1. / (1. + np.exp(x))
+    s = 1. / (1. + np.exp(-x))
 
     ### END YOUR CODE
 
@@ -71,7 +71,7 @@ def naiveSoftmaxLossAndGradient(
     y_grad = y_hat.copy()                               # (vocab_size, 1)
     y_grad[outsideWordIdx] -= 1
     
-    gradCenterVec = np.matmul(outsideWordIdx.T, y_grad) # (word_vec_len, 1)
+    gradCenterVec = np.matmul(outsideVectors.T, y_grad) # (word_vec_len, 1)
     gradOutsideVecs = np.outer(y_grad, centerWordVec)
 
     ### END YOUR CODE
@@ -110,16 +110,43 @@ def negSamplingLossAndGradient(
     it was sampled three times, and so forth.
 
     Arguments/Return Specifications: same as naiveSoftmaxLossAndGradient
+    centerWordVec -- numpy ndarray, center word's embedding
+                    in shape (word vector length, )
+                    (v_c in the pdf handout)
+    outsideWordIdx -- integer, the index of the outside word
+                    (o of u_o in the pdf handout)
+    outsideVectors -- outside vectors is
+                    in shape (num words in vocab, word vector length) 
+                    for all words in vocab (U in the pdf handout)
+    
     """
 
+    
+    
     # Negative sampling of words is done for you. Do not modify this if you
     # wish to match the autograder and receive points!
     negSampleWordIndices = getNegativeSamples(outsideWordIdx, dataset, K)
     indices = [outsideWordIdx] + negSampleWordIndices
 
     ### YOUR CODE HERE (~10 Lines)
-
+    gradCenterVec = np.zeros(centerWordVec.shape)
+    gradOutsideVecs = np.zeros(outsideVectors.shape)
+    loss = 0
+    
     ### Please use your implementation of sigmoid in here.
+    # for outsideWord
+    y_hat = sigmoid(np.dot(outsideVectors[outsideWordIdx], centerWordVec))
+    loss -= np.log(y_hat)
+    
+    gradCenterVec += (y_hat-1)*outsideVectors[outsideWordIdx]
+    gradOutsideVecs[outsideWordIdx] += (y_hat-1)*centerWordVec
+    
+    for i in range(K):
+        neg_i = indices[i+1]
+        y_hat_k = sigmoid(np.dot(outsideVectors[neg_i], centerWordVec))
+        loss -= np.log(1-y_hat_k)
+        gradCenterVec += y_hat_k*outsideVectors[neg_i]
+        gradOutsideVecs[neg_i] += y_hat_k*centerWordVec
 
     ### END YOUR CODE
 
@@ -166,6 +193,17 @@ def skipgram(currentCenterWord, windowSize, outsideWords, word2Ind,
     gradOutsideVectors = np.zeros(outsideVectors.shape)
 
     ### YOUR CODE HERE (~8 Lines)
+    centerIdx = word2Ind[currentCenterWord]
+    centerVec = centerWordVectors[centerIdx]
+    
+    for o_word in outsideWords:
+        o_i = word2Ind[o_word]
+        _loss, _gradCenterVec, _gradOutsideVecs =\
+        word2vecLossAndGradient(centerVec, o_i, outsideVectors, dataset)
+        loss += _loss
+        gradCenterVecs[centerIdx] += _gradCenterVec
+        gradOutsideVectors += _gradOutsideVecs
+    
 
     ### END YOUR CODE
     
